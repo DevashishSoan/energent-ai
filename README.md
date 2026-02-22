@@ -27,11 +27,11 @@ As AI models grow in complexity, their environmental impact becomes a critical c
 - Node.js 18+
 - AMD Hardware (Optional, but required for hardware-specific telemetry)
 
-### Installation
+### 🛠️ Installation & Setup
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/energent-ai.git
+   git clone https://github.com/DevashishSoan/energent-ai.git
    cd energent-ai
    ```
 
