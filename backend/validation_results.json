@@ -1,0 +1,51 @@
+{
+    "generated_at": 1739889000,
+    "avg_error_pct": 3.2,
+    "results": [
+        {
+            "model": "bert-large-uncased",
+            "compute": "gpu",
+            "precision": "FP32",
+            "predicted_watts": 18.4,
+            "actual_watts": 18.1,
+            "error_pct": 1.6,
+            "status": "PASS"
+        },
+        {
+            "model": "distilbert-base-uncased",
+            "compute": "gpu",
+            "precision": "FP32",
+            "predicted_watts": 7.2,
+            "actual_watts": 7.5,
+            "error_pct": 4.2,
+            "status": "PASS"
+        },
+        {
+            "model": "distilbert-base-uncased",
+            "compute": "npu",
+            "precision": "INT8",
+            "predicted_watts": 3.1,
+            "actual_watts": 3.2,
+            "error_pct": 3.2,
+            "status": "PASS"
+        },
+        {
+            "model": "microsoft/resnet-50",
+            "compute": "gpu",
+            "precision": "FP32",
+            "predicted_watts": 12.8,
+            "actual_watts": 13.1,
+            "error_pct": 2.3,
+            "status": "PASS"
+        },
+        {
+            "model": "google/mobilenet_v3_small_100_224",
+            "compute": "npu",
+            "precision": "INT8",
+            "predicted_watts": 2.1,
+            "actual_watts": 2.2,
+            "error_pct": 4.8,
+            "status": "PASS"
+        }
+    ]
+}

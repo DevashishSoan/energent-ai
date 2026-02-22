@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  energent-ai:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persist the SQLite database
+      - energent-data:/app/backend/data
+      # Mount the db file specifically if it's in root of backend
+      - ./backend/runs.db:/app/backend/runs.db
+    environment:
+      - CO2_SIGNAL_API_KEY=${CO2_SIGNAL_API_KEY}
+    restart: unless-stopped
+
+volumes:
+  energent-data:
