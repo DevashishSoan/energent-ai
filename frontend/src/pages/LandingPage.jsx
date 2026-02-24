@@ -5,6 +5,15 @@ export default function LandingPage() {
     const navigate = useNavigate()
     const [showOverlay, setShowOverlay] = useState(null)
     const [energySaved, setEnergySaved] = useState(847.3)
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+
+    // Mouse tracking for parallax
+    const handleMouseMove = (e) => {
+        setMousePos({
+            x: (e.clientX / window.innerWidth - 0.5) * 20,
+            y: (e.clientY / window.innerHeight - 0.5) * 20
+        })
+    }
 
     // Animated counter for energy saved
     useEffect(() => {
@@ -15,17 +24,20 @@ export default function LandingPage() {
     }, [])
 
     return (
-        <div style={{
-            minHeight: '100vh',
-            background: '#000000',
-            color: '#fff',
-            display: 'flex',
-            flexDirection: 'column',
-            fontFamily: "'Outfit', sans-serif",
-            overflowX: 'hidden',
-            position: 'relative',
-            width: '100%'
-        }}>
+        <div
+            onMouseMove={handleMouseMove}
+            style={{
+                minHeight: '100vh',
+                background: '#000000',
+                color: '#fff',
+                display: 'flex',
+                flexDirection: 'column',
+                fontFamily: "'Outfit', sans-serif",
+                overflowX: 'hidden',
+                position: 'relative',
+                width: '100%'
+            }}
+        >
             {/* ── Background: Noise & Neural Flow Mesh ── */}
             <div className="noise-texture" style={{ position: 'fixed', inset: 0, opacity: 0.05, pointerEvents: 'none', zIndex: 1 }} />
             <NeuralBackground />
@@ -81,12 +93,14 @@ export default function LandingPage() {
                 maxWidth: '1400px',
                 margin: '0 auto'
             }}>
-                {/* Floating Live Metrics Panel (Emotional Hook) - Fixed Positioning */}
+                {/* Floating Live Metrics Panel (Emotional Hook) - Fixed Positioning with Parallax */}
                 <div style={{
                     position: 'absolute',
-                    top: '40px',
-                    right: '40px',
-                    zIndex: 20
+                    top: '80px',
+                    right: '60px',
+                    zIndex: 20,
+                    transform: `translate(${mousePos.x}px, ${mousePos.y}px)`,
+                    transition: 'transform 0.1s ease-out'
                 }}>
                     <LiveMetricsPanel />
                 </div>
@@ -118,16 +132,17 @@ export default function LandingPage() {
                 </h1>
 
                 <p style={{
-                    fontSize: '22px', color: '#fff', lineHeight: '1.4',
-                    maxWidth: '850px', marginBottom: '12px', fontWeight: 700
+                    fontSize: '24px', color: '#fff', lineHeight: '1.4',
+                    maxWidth: '850px', marginBottom: '16px', fontWeight: 800
                 }}>
                     Reduce AI energy cost by <span style={{ color: '#10B981' }}>30%</span> with real-time optimization.
                 </p>
                 <p style={{
-                    fontSize: '18px', color: 'rgba(255,255,255,0.5)', lineHeight: '1.6',
-                    maxWidth: '750px', marginBottom: '60px', fontWeight: 400
+                    fontSize: '18px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.6',
+                    maxWidth: '700px', marginBottom: '60px', fontWeight: 400
                 }}>
-                    The definitive telemetry engine for energy-aware ML, built specifically for XDNA™ architecture and high-efficiency Ryzen AI NPUs.
+                    Telemetry engine for energy-aware ML, built for XDNA™<br />
+                    architecture and high-efficiency Ryzen AI NPUs.
                 </p>
 
                 {/* Center Visualization */}
@@ -263,6 +278,24 @@ function NeuralBackground() {
                 {nodes.current.map((node, i) => (
                     <g key={i}>
                         <circle className="neural-node" cx={`${node.x}%`} cy={`${node.y}%`} r={node.size} fill="#10B981" />
+                        {/* Data flowing toward the panel (Top Right) */}
+                        {i % 5 === 0 && (
+                            <circle r="1" fill="#10B981" className="data-packet">
+                                <animate
+                                    attributeName="cx"
+                                    from={`${node.x}%`} to="90%"
+                                    dur={`${Math.random() * 4 + 2}s`}
+                                    repeatCount="indefinite"
+                                />
+                                <animate
+                                    attributeName="cy"
+                                    from={`${node.y}%`} to="15%"
+                                    dur={`${Math.random() * 4 + 2}s`}
+                                    repeatCount="indefinite"
+                                />
+                                <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" />
+                            </circle>
+                        )}
                         {/* Faint connecting lines based on proximity (simulated with CSS lines) */}
                         {i % 4 === 0 && (
                             <line
@@ -281,6 +314,10 @@ function NeuralBackground() {
                 @keyframes neural-pulse {
                     0%, 100% { opacity: 0.2; transform: scale(1); }
                     50% { opacity: 0.6; transform: scale(1.5); }
+                }
+                .data-packet {
+                    filter: blur(1px);
+                    box-shadow: 0 0 5px #10B981;
                 }
             `}</style>
         </div>
@@ -302,38 +339,39 @@ function LiveMetricsPanel() {
     return (
         <div style={{
             width: '260px',
-            background: 'rgba(10,10,10,0.85)',
-            border: '1px solid rgba(16,185,129,0.4)',
-            borderRadius: '20px',
+            background: 'rgba(5,5,5,0.85)',
+            border: '1px solid rgba(16,185,129,0.5)',
+            borderRadius: '24px',
             padding: '24px',
             textAlign: 'left',
-            boxShadow: '0 30px 60px rgba(0,0,0,0.7), 0 0 30px rgba(16,185,129,0.1)',
-            backdropFilter: 'blur(12px)',
-            animation: 'panel-float 8s infinite ease-in-out'
+            boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 0 40px rgba(16,185,129,0.15)',
+            backdropFilter: 'blur(20px)',
+            animation: 'panel-float 8s infinite ease-in-out',
+            transformStyle: 'preserve-3d'
         }}>
-            <div style={{ fontSize: '10px', color: '#10B981', fontWeight: 900, letterSpacing: '1px', marginBottom: '12px', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: '10px', color: '#10B981', fontWeight: 900, letterSpacing: '1.5px', marginBottom: '16px', textTransform: 'uppercase' }}>
                 REAL-TIME TELEMETRY
             </div>
 
-            <div style={{ marginBottom: '16px' }}>
+            <div style={{ marginBottom: '20px' }}>
                 <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '4px' }}>NPU Efficiency</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                    <span style={{ fontSize: '24px', fontWeight: 800 }}>{efficiency}%</span>
-                    <span style={{ fontSize: '11px', color: '#10B981' }}>▲ 12%</span>
+                    <span style={{ fontSize: '28px', fontWeight: 800 }}>{efficiency}%</span>
+                    <span style={{ fontSize: '11px', color: '#10B981', fontWeight: 700 }}>▲ 12%</span>
                 </div>
             </div>
 
-            <div style={{ marginBottom: '16px' }}>
+            <div style={{ marginBottom: '20px' }}>
                 <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '4px' }}>CO2 Offset</div>
-                <div style={{ fontSize: '24px', fontWeight: 800 }}>{offset}g</div>
+                <div style={{ fontSize: '28px', fontWeight: 800 }}>{offset}g</div>
             </div>
 
             {/* Moving Waveform */}
             <div style={{ height: '40px', overflow: 'hidden', position: 'relative', marginTop: '10px' }}>
-                <svg width="200" height="40" viewBox="0 0 200 40">
+                <svg width="210" height="40" viewBox="0 0 210 40">
                     <path
-                        d="M0 20 Q 25 5, 50 20 T 100 20 T 150 20 T 200 20"
-                        fill="none" stroke="#10B981" strokeWidth="2"
+                        d="M0 20 Q 25 5, 50 20 T 100 20 T 150 20 T 210 20"
+                        fill="none" stroke="#10B981" strokeWidth="2.5"
                         className="waveform"
                     />
                 </svg>
@@ -341,16 +379,17 @@ function LiveMetricsPanel() {
 
             <style>{`
                 @keyframes panel-float {
-                    0%, 100% { transform: translateY(0) rotate(0); }
-                    50% { transform: translateY(-10px) rotate(1deg); }
+                    0%, 100% { transform: translateY(0) rotateX(2deg) rotateY(-2deg); }
+                    50% { transform: translateY(-15px) rotateX(-2deg) rotateY(2deg); }
                 }
                 .waveform {
-                    stroke-dasharray: 200;
-                    stroke-dashoffset: 200;
-                    animation: wave-flow 2s infinite linear;
+                    stroke-dasharray: 210;
+                    stroke-dashoffset: 210;
+                    animation: wave-flow 2.5s infinite linear;
+                    filter: drop-shadow(0 0 5px rgba(16,185,129,0.5));
                 }
                 @keyframes wave-flow {
-                    from { stroke-dashoffset: 200; }
+                    from { stroke-dashoffset: 420; }
                     to { stroke-dashoffset: 0; }
                 }
             `}</style>
