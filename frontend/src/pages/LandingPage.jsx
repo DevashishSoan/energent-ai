@@ -123,12 +123,12 @@ export default function LandingPage() {
                     CRAFTED BY ALGO NINJAS
                 </div>
 
-                <h1 style={{
-                    fontSize: '76px', fontWeight: 800, lineHeight: '1.05',
-                    marginBottom: '24px', letterSpacing: '-2px', maxWidth: '1000px'
+                <h1 className="shimmer-text" style={{
+                    fontSize: '80px', fontWeight: 800, lineHeight: '1.0',
+                    marginBottom: '24px', letterSpacing: '-2.5px', maxWidth: '1100px'
                 }}>
                     Sustainable AI.<br />
-                    Powered by <span className="shimmer-text">AMD Ryzen™ AI.</span>
+                    Powered by AMD Ryzen™ AI.
                 </h1>
 
                 <p style={{
@@ -151,13 +151,21 @@ export default function LandingPage() {
                 </div>
 
                 {/* CTAs */}
-                <div style={{ display: 'flex', gap: '20px' }}>
+                <div style={{ display: 'flex', gap: '20px', position: 'relative' }}>
+                    {/* Primary Button Anchor Glow */}
+                    <div style={{
+                        position: 'absolute', width: '200px', height: '100px',
+                        background: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%)',
+                        left: '-20px', top: '-10px', pointerEvents: 'none', filter: 'blur(20px)'
+                    }} />
+
                     <button
                         className="btn-primary-glow"
                         style={{
                             padding: '18px 48px', fontSize: '16px', fontWeight: 800,
                             borderRadius: '12px', background: '#10B981', color: '#fff',
-                            border: 'none', cursor: 'pointer', transition: 'all 0.3s'
+                            border: 'none', cursor: 'pointer', transition: 'all 0.3s',
+                            position: 'relative', zIndex: 1
                         }}
                         onClick={() => navigate('/dashboard')}
                     >
@@ -331,7 +339,8 @@ function LiveMetricsPanel() {
     useEffect(() => {
         const interval = setInterval(() => {
             setEfficiency(prev => +(85 + Math.random() * 10).toFixed(1))
-            setOffset(prev => +(prev + Math.random() * 0.1).toFixed(2))
+            // Slow, realistic increment for CO2 offset
+            setOffset(prev => +(prev + 0.01).toFixed(2))
         }, 2000)
         return () => clearInterval(interval)
     }, [])
@@ -366,13 +375,13 @@ function LiveMetricsPanel() {
                 <div style={{ fontSize: '28px', fontWeight: 800 }}>{offset}g</div>
             </div>
 
-            {/* Moving Waveform */}
+            {/* Moving Waveform with Pulse */}
             <div style={{ height: '40px', overflow: 'hidden', position: 'relative', marginTop: '10px' }}>
                 <svg width="210" height="40" viewBox="0 0 210 40">
                     <path
                         d="M0 20 Q 25 5, 50 20 T 100 20 T 150 20 T 210 20"
                         fill="none" stroke="#10B981" strokeWidth="2.5"
-                        className="waveform"
+                        className="waveform-living"
                     />
                 </svg>
             </div>
@@ -382,15 +391,19 @@ function LiveMetricsPanel() {
                     0%, 100% { transform: translateY(0) rotateX(2deg) rotateY(-2deg); }
                     50% { transform: translateY(-15px) rotateX(-2deg) rotateY(2deg); }
                 }
-                .waveform {
+                .waveform-living {
                     stroke-dasharray: 210;
                     stroke-dashoffset: 210;
-                    animation: wave-flow 2.5s infinite linear;
+                    animation: wave-flow 2.5s infinite linear, wave-pulse 2s infinite ease-in-out;
                     filter: drop-shadow(0 0 5px rgba(16,185,129,0.5));
                 }
                 @keyframes wave-flow {
                     from { stroke-dashoffset: 420; }
                     to { stroke-dashoffset: 0; }
+                }
+                @keyframes wave-pulse {
+                    0%, 100% { stroke-opacity: 0.6; stroke-width: 2; }
+                    50% { stroke-opacity: 1; stroke-width: 3.5; }
                 }
             `}</style>
         </div>
