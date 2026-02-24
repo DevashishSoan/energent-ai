@@ -25,9 +25,9 @@ export default function LandingPage() {
             overflowX: 'hidden',
             position: 'relative'
         }}>
-            {/* ── Background: Noise & Particles ── */}
+            {/* ── Background: Noise & Neural Flow Mesh ── */}
             <div className="noise-texture" style={{ position: 'fixed', inset: 0, opacity: 0.05, pointerEvents: 'none', zIndex: 1 }} />
-            <ParticleBackground />
+            <NeuralBackground />
 
             {/* ── Header ── */}
             <nav style={{
@@ -48,9 +48,9 @@ export default function LandingPage() {
                 </div>
 
                 <div style={{ display: 'flex', gap: '40px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, letterSpacing: '1px' }}>
-                    <span className="nav-link cursor-pointer" onClick={() => navigate('/dashboard')}>DASHBOARD</span>
-                    <span className="nav-link cursor-pointer" onClick={() => setShowOverlay('architecture')}>ARCHITECTURE</span>
-                    <span className="nav-link cursor-pointer" onClick={() => setShowOverlay('documentation')}>DOCUMENTATION</span>
+                    <span className="nav-link-animated cursor-pointer" onClick={() => navigate('/dashboard')}>DASHBOARD</span>
+                    <span className="nav-link-animated cursor-pointer" onClick={() => setShowOverlay('architecture')}>ARCHITECTURE</span>
+                    <span className="nav-link-animated cursor-pointer" onClick={() => setShowOverlay('documentation')}>DOCUMENTATION</span>
                 </div>
 
                 <button
@@ -73,45 +73,54 @@ export default function LandingPage() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 textAlign: 'center',
-                padding: '60px 24px 120px 24px',
+                padding: '40px 24px 100px 24px',
                 zIndex: 10,
                 position: 'relative'
             }}>
+                {/* Floating Live Metrics Panel (Emotional Hook) */}
+                <LiveMetricsPanel />
+
                 {/* Status Bar */}
                 <div style={{
-                    display: 'flex', gap: '24px', marginBottom: '40px',
+                    display: 'flex', gap: '24px', marginBottom: '32px',
                     fontSize: '11px', fontWeight: 900, letterSpacing: '2px', textTransform: 'uppercase'
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.8)' }}>
                         <span className="live-dot" style={{ width: '8px', height: '8px' }} />
-                        NOW MONITORING 1.4B+ PARAMS
+                        NOW MONITORING AI WORKLOADS
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10B981', textShadow: '0 0 10px rgba(16,185,129,0.3)' }}>
-                        ⚡ ENERGY SAVED TODAY: {energySaved} kWh
+                        ⚡ ENERGY SAVED: {energySaved} kWh
                     </div>
                 </div>
 
-                <div style={{ marginBottom: '16px', fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', letterSpacing: '3px' }}>
+                <div style={{ marginBottom: '12px', fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', letterSpacing: '3px' }}>
                     CRAFTED BY ALGO NINJAS
                 </div>
 
                 <h1 style={{
-                    fontSize: '72px', fontWeight: 800, lineHeight: '1.1',
-                    marginBottom: '32px', letterSpacing: '-2px', maxWidth: '1000px'
+                    fontSize: '76px', fontWeight: 800, lineHeight: '1.05',
+                    marginBottom: '24px', letterSpacing: '-2px', maxWidth: '1000px'
                 }}>
                     Sustainable AI.<br />
                     Powered by <span className="shimmer-text">AMD Ryzen™ AI.</span>
                 </h1>
 
                 <p style={{
-                    fontSize: '20px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.6',
-                    maxWidth: '800px', marginBottom: '60px', fontWeight: 400
+                    fontSize: '22px', color: '#fff', lineHeight: '1.4',
+                    maxWidth: '850px', marginBottom: '12px', fontWeight: 700
                 }}>
-                    The definitive telemetry engine for energy-aware ML. Real-time power profiling, predictive optimization, and carbon auditing built specifically for XDNA™ architecture.
+                    Reduce AI energy cost by <span style={{ color: '#10B981' }}>30%</span> with real-time optimization.
+                </p>
+                <p style={{
+                    fontSize: '18px', color: 'rgba(255,255,255,0.5)', lineHeight: '1.6',
+                    maxWidth: '750px', marginBottom: '60px', fontWeight: 400
+                }}>
+                    The definitive telemetry engine for energy-aware ML, built specifically for XDNA™ architecture and high-efficiency Ryzen AI NPUs.
                 </p>
 
-                {/* 3D Visualization Placeholder Element */}
-                <div style={{ width: '800px', height: '400px', position: 'relative', marginBottom: '60px' }}>
+                {/* Center Visualization */}
+                <div style={{ width: '800px', height: '360px', position: 'relative', marginBottom: '60px' }}>
                     <NodeNetwork />
                 </div>
 
@@ -167,7 +176,28 @@ export default function LandingPage() {
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800;900&display=swap');
                 
-                .nav-link:hover { color: #fff; }
+                .nav-link-animated {
+                    position: relative;
+                    transition: color 0.3s ease;
+                }
+                .nav-link-animated::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -4px;
+                    left: 0;
+                    width: 0;
+                    height: 1px;
+                    background: #10B981;
+                    transition: width 0.3s ease;
+                    box-shadow: 0 0 8px #10B981;
+                }
+                .nav-link-animated:hover {
+                    color: #fff;
+                }
+                .nav-link-animated:hover::after {
+                    width: 100%;
+                }
+
                 .btn-launch:hover { background: rgba(255,255,255,0.1); border-color: rgba(16,185,129,0.3); box-shadow: 0 0 15px rgba(16,185,129,0.2); }
                 
                 .shimmer-text {
@@ -208,28 +238,106 @@ export default function LandingPage() {
     )
 }
 
-function ParticleBackground() {
-    const particles = Array.from({ length: 50 })
+function NeuralBackground() {
+    const nodes = useRef(Array.from({ length: 40 }).map(() => ({
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 2 + 1,
+        speed: Math.random() * 10 + 20
+    })))
+
     return (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 2, pointerEvents: 'none' }}>
-            {particles.map((_, i) => (
-                <div key={i} className="particle" style={{
-                    position: 'absolute',
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    width: `${Math.random() * 3 + 1}px`,
-                    height: `${Math.random() * 3 + 1}px`,
-                    background: '#10B981',
-                    borderRadius: '50%',
-                    opacity: Math.random() * 0.4,
-                    animation: `float-up ${Math.random() * 10 + 10}s linear infinite`,
-                    animationDelay: `-${Math.random() * 10}s`
-                }} />
-            ))}
+        <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', opacity: 0.2 }}>
+            <svg width="100%" height="100%" style={{ position: 'absolute' }}>
+                {nodes.current.map((node, i) => (
+                    <g key={i}>
+                        <circle className="neural-node" cx={`${node.x}%`} cy={`${node.y}%`} r={node.size} fill="#10B981" />
+                        {/* Faint connecting lines based on proximity (simulated with CSS lines) */}
+                        {i % 4 === 0 && (
+                            <line
+                                x1={`${node.x}%`} y1={`${node.y}%`}
+                                x2={`${node.x + 10}%`} y2={`${node.y + 10}%`}
+                                stroke="rgba(16,185,129,0.1)" strokeWidth="0.5"
+                            />
+                        )}
+                    </g>
+                ))}
+            </svg>
             <style>{`
-                @keyframes float-up {
-                    from { transform: translateY(100vh) scale(1); }
-                    to { transform: translateY(-10vh) scale(0.5); }
+                .neural-node {
+                    animation: neural-pulse 4s infinite ease-in-out;
+                }
+                @keyframes neural-pulse {
+                    0%, 100% { opacity: 0.2; transform: scale(1); }
+                    50% { opacity: 0.6; transform: scale(1.5); }
+                }
+            `}</style>
+        </div>
+    )
+}
+
+function LiveMetricsPanel() {
+    const [efficiency, setEfficiency] = useState(88.4)
+    const [offset, setOffset] = useState(3.8)
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setEfficiency(prev => +(85 + Math.random() * 10).toFixed(1))
+            setOffset(prev => +(prev + Math.random() * 0.1).toFixed(2))
+        }, 2000)
+        return () => clearInterval(interval)
+    }, [])
+
+    return (
+        <div style={{
+            position: 'absolute', top: '100px', right: '-120px', width: '240px',
+            background: 'rgba(10,10,10,0.8)', border: '1px solid rgba(16,185,129,0.3)',
+            borderRadius: '16px', padding: '20px', textAlign: 'left',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.5), 0 0 20px rgba(16,185,129,0.1)',
+            zIndex: 20, backdropFilter: 'blur(10px)',
+            animation: 'panel-float 6s infinite ease-in-out'
+        }}>
+            <div style={{ fontSize: '10px', color: '#10B981', fontWeight: 900, letterSpacing: '1px', marginBottom: '12px', textTransform: 'uppercase' }}>
+                REAL-TIME TELEMETRY
+            </div>
+
+            <div style={{ marginBottom: '16px' }}>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '4px' }}>NPU Efficiency</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                    <span style={{ fontSize: '24px', fontWeight: 800 }}>{efficiency}%</span>
+                    <span style={{ fontSize: '11px', color: '#10B981' }}>▲ 12%</span>
+                </div>
+            </div>
+
+            <div style={{ marginBottom: '16px' }}>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '4px' }}>CO2 Offset</div>
+                <div style={{ fontSize: '24px', fontWeight: 800 }}>{offset}g</div>
+            </div>
+
+            {/* Moving Waveform */}
+            <div style={{ height: '40px', overflow: 'hidden', position: 'relative', marginTop: '10px' }}>
+                <svg width="200" height="40" viewBox="0 0 200 40">
+                    <path
+                        d="M0 20 Q 25 5, 50 20 T 100 20 T 150 20 T 200 20"
+                        fill="none" stroke="#10B981" strokeWidth="2"
+                        className="waveform"
+                    />
+                </svg>
+            </div>
+
+            <style>{`
+                @keyframes panel-float {
+                    0%, 100% { transform: translateY(0) rotate(0); }
+                    50% { transform: translateY(-10px) rotate(1deg); }
+                }
+                .waveform {
+                    stroke-dasharray: 200;
+                    stroke-dashoffset: 200;
+                    animation: wave-flow 2s infinite linear;
+                }
+                @keyframes wave-flow {
+                    from { stroke-dashoffset: 200; }
+                    to { stroke-dashoffset: 0; }
                 }
             `}</style>
         </div>
@@ -254,7 +362,7 @@ function NodeNetwork() {
                     if (dist < 200) {
                         return (
                             <line key={`${i}-${j}`} x1={n1.x} y1={n1.y} x2={n2.x} y2={n2.y}
-                                stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+                                stroke="rgba(16,185,129,0.1)" strokeWidth="1" />
                         )
                     }
                     return null
@@ -262,36 +370,28 @@ function NodeNetwork() {
             )}
 
             {/* Particles flowing along lines simulation */}
-            <circle r="2" fill="#10B981">
+            <circle r="3" fill="#10B981" filter="blur(2px)">
                 <animateMotion
                     dur="3s" repeatCount="indefinite"
                     path="M 100 100 L 300 150 L 500 50 L 700 300"
                 />
             </circle>
-            <circle r="2" fill="#10B981">
+            <circle r="3" fill="#10B981" filter="blur(2px)">
                 <animateMotion
-                    dur="4s" repeatCount="indefinite"
+                    dur="5s" repeatCount="indefinite"
                     path="M 600 50 L 400 300 L 100 200"
                 />
             </circle>
 
             {/* Nodes */}
             {nodes.map(node => (
-                <g key={node.id} style={{ animation: `pulse-node 4s infinite ${node.id * 0.2}s` }}>
+                <g key={node.id}>
                     <circle cx={node.x} cy={node.y} r={node.size} fill={node.color} opacity="0.6">
                         <animate attributeName="opacity" values="0.2;0.6;0.2" dur="4s" repeatCount="indefinite" />
                     </circle>
                     <circle cx={node.x} cy={node.y} r={node.size / 2} fill={node.color} />
                 </g>
             ))}
-
-            <style>{`
-                @keyframes pulse-node {
-                    0% { transform: scale(1); }
-                    50% { transform: scale(1.1); }
-                    100% { transform: scale(1); }
-                }
-            `}</style>
         </svg>
     )
 }
