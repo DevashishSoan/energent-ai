@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 
 const TERMINAL_LOGS = [
+    { time: '00:00:00', type: 'INFO', msg: 'System Architect: ALGO NINJAS' },
     { time: '00:00:01', type: 'INFO', msg: 'Initializing Energent Neural Engine...' },
     { time: '00:00:02', type: 'INFO', msg: 'Detecting hardware: AMD Ryzen AI 9 HX 370' },
     { time: '00:00:02', type: 'SUCCESS', msg: 'NPU Core detected (50 TOPS) - ACTIVE' },
@@ -118,14 +119,21 @@ export default function LandingPage() {
             }}>
                 {/* Badge */}
                 <div style={{
-                    display: 'inline-flex', alignItems: 'center', gap: '8px',
-                    padding: '8px 16px', borderRadius: '100px',
-                    background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.1)',
-                    fontSize: '11px', fontWeight: 900, color: 'var(--optimal)', marginBottom: '32px',
-                    letterSpacing: '2px', textTransform: 'uppercase'
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', marginBottom: '32px'
                 }}>
-                    <span className="live-dot" style={{ width: '8px', height: '8px' }} />
-                    Now Monitoring 1.4B+ Params
+                    <div style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '8px',
+                        padding: '8px 16px', borderRadius: '100px',
+                        background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.1)',
+                        fontSize: '11px', fontWeight: 900, color: 'var(--optimal)',
+                        letterSpacing: '2px', textTransform: 'uppercase'
+                    }}>
+                        <span className="live-dot" style={{ width: '8px', height: '8px' }} />
+                        Now Monitoring 1.4B+ Params
+                    </div>
+                    <div style={{ fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', letterSpacing: '3px', textTransform: 'uppercase' }}>
+                        CRAFTED BY <span style={{ color: '#fff' }}>ALGO NINJAS</span>
+                    </div>
                 </div>
 
                 <h1 style={{
@@ -210,8 +218,8 @@ export default function LandingPage() {
                             {logs.map((log, i) => (
                                 <div key={i} style={{
                                     marginBottom: '6px', borderLeft: `2px solid ${log.type === 'SUCCESS' ? 'var(--optimal)' :
-                                            log.type === 'WARN' ? '#f59e0b' :
-                                                log.type === 'INFO' ? '#3b82f6' : 'transparent'}`, paddingLeft: '16px'
+                                        log.type === 'WARN' ? '#f59e0b' :
+                                            log.type === 'INFO' ? '#3b82f6' : 'transparent'}`, paddingLeft: '16px'
                                 }}>
                                     <span style={{ color: 'rgba(255,255,255,0.2)' }}>[{log.time}]</span>{' '}
                                     <span style={{
@@ -256,7 +264,7 @@ export default function LandingPage() {
                         fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: 900,
                         letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '32px'
                     }}>
-                        Architected for Silicon Intelligence
+                        Architected for Silicon Intelligence | © 2026 ALGO NINJAS
                     </div>
                     <div style={{
                         display: 'flex', justifyContent: 'center', gap: '80px', alignItems: 'center',

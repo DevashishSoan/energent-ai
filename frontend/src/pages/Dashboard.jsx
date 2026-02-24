@@ -178,7 +178,7 @@ export default function Dashboard() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <span className="logo-text" style={{ fontSize: '15px', fontWeight: 800, color: '#fff', letterSpacing: '-0.7px' }}>
-                            ENER<span style={{ color: 'var(--optimal)' }}>GENT</span> AI
+                            ENER<span style={{ color: 'var(--optimal)' }}>GENT</span> AI <span style={{ fontSize: '10px', color: 'var(--text-tertiary)', fontWeight: 600, marginLeft: '4px' }}>BY ALGO NINJAS</span>
                         </span>
                         <span style={{ fontSize: '9px', color: 'var(--text-secondary)', fontWeight: 900, letterSpacing: '1.2px', textTransform: 'uppercase' }}>
                             SUSTAINABILITY ANALYTICS
