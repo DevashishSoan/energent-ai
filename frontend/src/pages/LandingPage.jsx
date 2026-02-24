@@ -1,76 +1,35 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 
-const TERMINAL_LOGS = [
-    { time: '00:00:00', type: 'INFO', msg: 'System Architect: ALGO NINJAS' },
-    { time: '00:00:01', type: 'INFO', msg: 'Initializing Energent Neural Engine...' },
-    { time: '00:00:02', type: 'INFO', msg: 'Detecting hardware: AMD Ryzen AI 9 HX 370' },
-    { time: '00:00:02', type: 'SUCCESS', msg: 'NPU Core detected (50 TOPS) - ACTIVE' },
-    { time: '00:00:03', type: 'INFO', msg: 'Connecting to power telemetry sensors...' },
-    { time: '00:00:03', type: 'DATA', msg: 'GPU Power: 15.2W | CPU Power: 22.1W' },
-    { time: '00:00:04', type: 'WARN', msg: 'High energy consumption detected on process [PID:892]' },
-    { time: '00:00:04', type: 'ACTION', msg: 'Optimizing... Switching dispatch to NPU' },
-    { time: '00:00:05', type: 'SUCCESS', msg: 'Power reduced by 82% (12.4W saved)' },
-    { time: '00:00:05', type: 'INFO', msg: 'Calculating carbon footprint...' },
-    { time: '00:00:06', type: 'DATA', msg: 'Grid Intensity: 420g/kWh (Coal)' },
-    { time: '00:00:06', type: 'INFO', msg: 'Session secured: Energent AI v1.0.2' },
-]
-
 export default function LandingPage() {
     const navigate = useNavigate()
-    const [logs, setLogs] = useState([])
-    const [showOverlay, setShowOverlay] = useState(null) // 'architecture' | 'documentation'
+    const [showOverlay, setShowOverlay] = useState(null)
+    const [energySaved, setEnergySaved] = useState(847.3)
 
-    const indexRef = useRef(0)
-    const intervalRef = useRef(null)
-
+    // Animated counter for energy saved
     useEffect(() => {
-        indexRef.current = 0
-        setLogs([])
-
-        intervalRef.current = setInterval(() => {
-            if (indexRef.current >= TERMINAL_LOGS.length) {
-                indexRef.current = 0
-                setLogs([])
-                return
-            }
-            const entry = TERMINAL_LOGS[indexRef.current]
-            if (entry) setLogs(prev => [...prev, entry])
-            indexRef.current++
-        }, 800)
-
-        return () => {
-            clearInterval(intervalRef.current)
-            intervalRef.current = null
-        }
+        const interval = setInterval(() => {
+            setEnergySaved(prev => +(prev + Math.random() * 0.05).toFixed(1))
+        }, 3000)
+        return () => clearInterval(interval)
     }, [])
 
     return (
         <div style={{
             minHeight: '100vh',
-            background: '#020202',
+            background: '#000000',
             color: '#fff',
             display: 'flex',
             flexDirection: 'column',
-            fontFamily: "'Inter', sans-serif",
-            overflowX: 'hidden'
+            fontFamily: "'Outfit', sans-serif",
+            overflowX: 'hidden',
+            position: 'relative'
         }}>
-            {/* ── Background: Cyber Grid & Glows ── */}
-            <div className="bg-grid-animate" style={{ position: 'fixed', inset: 0, opacity: 0.15, zIndex: 0 }} />
+            {/* ── Background: Noise & Particles ── */}
+            <div className="noise-texture" style={{ position: 'fixed', inset: 0, opacity: 0.05, pointerEvents: 'none', zIndex: 1 }} />
+            <ParticleBackground />
 
-            <div style={{
-                position: 'fixed', top: '-10%', left: '10%', width: '800px', height: '800px',
-                background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%)',
-                filter: 'blur(100px)', pointerEvents: 'none', zIndex: 0
-            }} />
-
-            <div style={{
-                position: 'fixed', bottom: '-20%', right: '-10%', width: '900px', height: '900px',
-                background: 'radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%)',
-                filter: 'blur(120px)', pointerEvents: 'none', zIndex: 0
-            }} />
-
-            {/* ── Navigation ── */}
+            {/* ── Header ── */}
             <nav style={{
                 padding: '32px 60px',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -78,17 +37,17 @@ export default function LandingPage() {
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                     <div style={{
-                        width: '32px', height: '32px', borderRadius: '8px',
-                        background: 'var(--optimal)', display: 'flex', alignItems: 'center',
+                        width: '32px', height: '32px', borderRadius: '50%',
+                        background: '#10B981', display: 'flex', alignItems: 'center',
                         justifyContent: 'center', fontWeight: 'bold', color: '#000',
                         fontSize: '18px', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)'
                     }}>E</div>
-                    <span style={{ fontWeight: 900, fontSize: '22px', letterSpacing: '-1px', textTransform: 'uppercase' }}>
-                        Energent <span style={{ color: 'var(--optimal)' }}>AI</span>
+                    <span style={{ fontWeight: 800, fontSize: '22px', letterSpacing: '-0.5px' }}>
+                        ENERGENT AI
                     </span>
                 </div>
 
-                <div style={{ display: 'flex', gap: '40px', fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, letterSpacing: '1px' }}>
+                <div style={{ display: 'flex', gap: '40px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, letterSpacing: '1px' }}>
                     <span className="nav-link cursor-pointer" onClick={() => navigate('/dashboard')}>DASHBOARD</span>
                     <span className="nav-link cursor-pointer" onClick={() => setShowOverlay('architecture')}>ARCHITECTURE</span>
                     <span className="nav-link cursor-pointer" onClick={() => setShowOverlay('documentation')}>DOCUMENTATION</span>
@@ -96,212 +55,244 @@ export default function LandingPage() {
 
                 <button
                     onClick={() => navigate('/dashboard')}
+                    className="btn-launch"
                     style={{
-                        padding: '10px 24px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)',
+                        padding: '12px 24px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)',
                         border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '13px',
-                        fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s'
+                        fontWeight: 700, cursor: 'pointer', transition: 'all 0.3s'
                     }}
-                    className="btn-hover-glow"
                 >
-                    LAUNCH CONSOLE
+                    LAUNCH DASHBOARD
                 </button>
             </nav>
 
-            {/* ── Hero Section ─────────────────────────── */}
+            {/* ── Main Hero Section ─────────────────────────── */}
             <main style={{
                 flex: 1,
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 textAlign: 'center',
-                padding: '120px 24px',
+                padding: '60px 24px 120px 24px',
                 zIndex: 10,
                 position: 'relative'
             }}>
-                {/* Badge */}
+                {/* Status Bar */}
                 <div style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', marginBottom: '32px'
+                    display: 'flex', gap: '24px', marginBottom: '40px',
+                    fontSize: '11px', fontWeight: 900, letterSpacing: '2px', textTransform: 'uppercase'
                 }}>
-                    <div style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '8px',
-                        padding: '8px 16px', borderRadius: '100px',
-                        background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.1)',
-                        fontSize: '11px', fontWeight: 900, color: 'var(--optimal)',
-                        letterSpacing: '2px', textTransform: 'uppercase'
-                    }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.8)' }}>
                         <span className="live-dot" style={{ width: '8px', height: '8px' }} />
-                        Now Monitoring 1.4B+ Params
+                        NOW MONITORING 1.4B+ PARAMS
                     </div>
-                    <div style={{ fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', letterSpacing: '3px', textTransform: 'uppercase' }}>
-                        CRAFTED BY <span style={{ color: '#fff' }}>ALGO NINJAS</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10B981', textShadow: '0 0 10px rgba(16,185,129,0.3)' }}>
+                        ⚡ ENERGY SAVED TODAY: {energySaved} kWh
                     </div>
                 </div>
 
+                <div style={{ marginBottom: '16px', fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', letterSpacing: '3px' }}>
+                    CRAFTED BY ALGO NINJAS
+                </div>
+
                 <h1 style={{
-                    fontSize: '84px', fontWeight: 900, lineHeight: '0.95',
-                    marginBottom: '32px', letterSpacing: '-4px', maxWidth: '1000px'
+                    fontSize: '72px', fontWeight: 800, lineHeight: '1.1',
+                    marginBottom: '32px', letterSpacing: '-2px', maxWidth: '1000px'
                 }}>
-                    Sustainable AI. <br />
-                    Powered by <span style={{
-                        background: 'linear-gradient(to right, #10B981, #3B82F6)',
-                        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
-                    }}>AMD Ryzen™ AI.</span>
+                    Sustainable AI.<br />
+                    Powered by <span className="shimmer-text">AMD Ryzen™ AI.</span>
                 </h1>
 
                 <p style={{
-                    fontSize: '22px', color: 'rgba(255,255,255,0.6)', lineHeight: '1.5',
-                    maxWidth: '700px', marginBottom: '48px', fontWeight: 500
+                    fontSize: '20px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.6',
+                    maxWidth: '800px', marginBottom: '60px', fontWeight: 400
                 }}>
-                    The definitive telemetry engine for energy-aware ML.
-                    Real-time power profiling, predictive optimization, and carbon auditing
-                    built specifically for XDNA™ architecture.
+                    The definitive telemetry engine for energy-aware ML. Real-time power profiling, predictive optimization, and carbon auditing built specifically for XDNA™ architecture.
                 </p>
 
+                {/* 3D Visualization Placeholder Element */}
+                <div style={{ width: '800px', height: '400px', position: 'relative', marginBottom: '60px' }}>
+                    <NodeNetwork />
+                </div>
+
+                {/* CTAs */}
                 <div style={{ display: 'flex', gap: '20px' }}>
                     <button
-                        className="btn-primary"
+                        className="btn-primary-glow"
                         style={{
-                            padding: '20px 56px', fontSize: '18px', fontWeight: 800,
-                            borderRadius: '12px', background: 'var(--optimal)', color: '#000',
-                            boxShadow: '0 10px 40px rgba(16, 185, 129, 0.25)', border: 'none'
+                            padding: '18px 48px', fontSize: '16px', fontWeight: 800,
+                            borderRadius: '12px', background: '#10B981', color: '#fff',
+                            border: 'none', cursor: 'pointer', transition: 'all 0.3s'
                         }}
                         onClick={() => navigate('/dashboard')}
                     >
                         START RUNNING →
                     </button>
                     <button
+                        className="btn-secondary-outline"
                         onClick={() => window.open('https://github.com/aiman/energent-ai', '_blank')}
                         style={{
-                            padding: '20px 40px', fontSize: '18px', fontWeight: 800,
+                            padding: '18px 48px', fontSize: '16px', fontWeight: 800,
                             borderRadius: '12px', background: 'transparent', color: '#fff',
-                            border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer'
+                            border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', transition: 'all 0.3s'
                         }}
                     >
                         VIEW CODEBASE
                     </button>
                 </div>
-
-                {/* Dashboard Preview / Terminal Container */}
-                <div style={{
-                    marginTop: '100px', width: '100%', maxWidth: '1100px',
-                    perspective: '1000px', position: 'relative'
-                }}>
-                    <div className="glass-card" style={{
-                        height: '460px',
-                        background: 'rgba(10,10,10,0.8)',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        boxShadow: '0 40px 100px rgba(0,0,0,0.8)',
-                        padding: '0',
-                        overflow: 'hidden',
-                        display: 'flex', flexDirection: 'column',
-                        transform: 'rotateX(5deg)',
-                        opacity: 0.95
-                    }}>
-                        {/* Fake Console Interface */}
-                        <div style={{
-                            padding: '16px 24px', background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.05)',
-                            display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-                        }}>
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ff5f56' }} />
-                                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ffbd2e' }} />
-                                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#27c93f' }} />
-                            </div>
-                            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 800, letterSpacing: '1px', fontFamily: 'monospace' }}>
-                                ENERGENT_TELEMETRY_LOGS.EXE
-                            </div>
-                            <div style={{ width: '40px' }} />
-                        </div>
-
-                        <div style={{
-                            padding: '32px', flex: 1, fontFamily: 'monospace', fontSize: '14px',
-                            overflow: 'hidden', color: '#888', lineHeight: '1.8', textAlign: 'left'
-                        }}>
-                            {logs.map((log, i) => (
-                                <div key={i} style={{
-                                    marginBottom: '6px', borderLeft: `2px solid ${log.type === 'SUCCESS' ? 'var(--optimal)' :
-                                        log.type === 'WARN' ? '#f59e0b' :
-                                            log.type === 'INFO' ? '#3b82f6' : 'transparent'}`, paddingLeft: '16px'
-                                }}>
-                                    <span style={{ color: 'rgba(255,255,255,0.2)' }}>[{log.time}]</span>{' '}
-                                    <span style={{
-                                        color: log.type === 'INFO' ? '#3b82f6' :
-                                            log.type === 'SUCCESS' ? 'var(--optimal)' :
-                                                log.type === 'WARN' ? '#f59e0b' :
-                                                    log.type === 'ACTION' ? '#a78bfa' : '#fff',
-                                        fontWeight: 'bold', textTransform: 'uppercase', fontSize: '11px'
-                                    }}>
-                                        {log.type}
-                                    </span>{' '}
-                                    <span style={{ color: 'rgba(255,255,255,0.8)' }}>{log.msg}</span>
-                                </div>
-                            ))}
-                            <div style={{ marginTop: '12px' }}>
-                                <span style={{ color: 'var(--optimal)' }}>➜</span> <span className="cursor-blink">_</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Decorative Elements */}
-                    <div style={{
-                        position: 'absolute', top: '50%', left: '-80px', width: '200px', height: '1px',
-                        background: 'linear-gradient(to right, transparent, var(--optimal))', opacity: 0.3
-                    }} />
-                    <div style={{
-                        position: 'absolute', top: '50%', right: '-80px', width: '200px', height: '1px',
-                        background: 'linear-gradient(to left, transparent, var(--optimal))', opacity: 0.3
-                    }} />
-                </div>
             </main>
 
-            {/* ── Marquee Footer ── */}
-            <div style={{
-                borderTop: '1px solid rgba(255,255,255,0.05)', padding: '60px 0',
-                background: 'rgba(0,0,0,0.5)', zIndex: 10
+            {/* ── Footer ── */}
+            <footer style={{
+                padding: '60px 24px',
+                borderTop: '1px solid rgba(255,255,255,0.05)',
+                zIndex: 10,
+                textAlign: 'center'
             }}>
-                <div style={{
-                    maxWidth: '1200px', margin: '0 auto', textAlign: 'center'
-                }}>
-                    <div style={{
-                        fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontWeight: 900,
-                        letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '32px'
-                    }}>
-                        Architected for Silicon Intelligence | © 2026 ALGO NINJAS
-                    </div>
-                    <div style={{
-                        display: 'flex', justifyContent: 'center', gap: '80px', alignItems: 'center',
-                        opacity: 0.4, filter: 'grayscale(1) brightness(2)'
-                    }}>
-                        <span style={{ fontWeight: 950, fontSize: '32px', letterSpacing: '-2px' }}>AMD</span>
-                        <span style={{ fontWeight: 800, fontSize: '24px' }}>ROCm™</span>
-                        <span style={{ fontWeight: 800, fontSize: '24px' }}>XDNA™</span>
-                        <span style={{ fontWeight: 800, fontSize: '24px' }}>Zen 5</span>
-                    </div>
+                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 800, letterSpacing: '2px', marginBottom: '32px' }}>
+                    ARCHITECTED FOR SILICON INTELLIGENCE | © 2026 ALGO NINJAS
                 </div>
-            </div>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '60px', alignItems: 'center', opacity: 0.5 }}>
+                    <span style={{ fontSize: '24px', fontWeight: 900 }}>AMD</span>
+                    <span style={{ fontSize: '16px', fontWeight: 700 }}>ROCm™</span>
+                    <span style={{ fontSize: '16px', fontWeight: 700 }}>XDNA™</span>
+                    <span style={{ fontSize: '16px', fontWeight: 700 }}>Zen 5</span>
+                </div>
+            </footer>
 
             {showOverlay && (
                 <TechOverlay type={showOverlay} onClose={() => setShowOverlay(null)} />
             )}
 
             <style>{`
-                .nav-link:hover { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
-                .btn-hover-glow:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); border-color: rgba(255,255,255,0.3); }
-                .cursor-blink { animation: blink 1s step-end infinite; color: var(--optimal); }
-                @keyframes blink { 50% { opacity: 0; } }
-                .bg-grid-animate {
-                    background-image: 
-                        linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
-                    background-size: 40px 40px;
+                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800;900&display=swap');
+                
+                .nav-link:hover { color: #fff; }
+                .btn-launch:hover { background: rgba(255,255,255,0.1); border-color: rgba(16,185,129,0.3); box-shadow: 0 0 15px rgba(16,185,129,0.2); }
+                
+                .shimmer-text {
+                    background: linear-gradient(90deg, #10B981, #3B82F6, #10B981);
+                    background-size: 200% auto;
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    animation: shimmer 3s linear infinite;
                 }
+                
+                @keyframes shimmer {
+                    to { background-position: 200% center; }
+                }
+
+                .btn-primary-glow:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(16,185,129,0.5); }
+                .btn-secondary-outline:hover { border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
+                
+                .noise-texture {
+                    background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+                    filter: contrast(150%) brightness(100%);
+                }
+
                 .glass-overlay {
-                    backdrop-filter: blur(20px);
-                    animation: fadeIn 0.3s ease-out;
+                    backdrop-filter: blur(40px);
+                    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                 }
-                @keyframes fadeIn { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: scale(1); } }
+                @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+                
+                .live-dot {
+                    background: #10B981;
+                    border-radius: 50%;
+                    box-shadow: 0 0 10px #10B981;
+                    animation: pulse 2s infinite;
+                }
+                @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
             `}</style>
         </div>
+    )
+}
+
+function ParticleBackground() {
+    const particles = Array.from({ length: 50 })
+    return (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2, pointerEvents: 'none' }}>
+            {particles.map((_, i) => (
+                <div key={i} className="particle" style={{
+                    position: 'absolute',
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    width: `${Math.random() * 3 + 1}px`,
+                    height: `${Math.random() * 3 + 1}px`,
+                    background: '#10B981',
+                    borderRadius: '50%',
+                    opacity: Math.random() * 0.4,
+                    animation: `float-up ${Math.random() * 10 + 10}s linear infinite`,
+                    animationDelay: `-${Math.random() * 10}s`
+                }} />
+            ))}
+            <style>{`
+                @keyframes float-up {
+                    from { transform: translateY(100vh) scale(1); }
+                    to { transform: translateY(-10vh) scale(0.5); }
+                }
+            `}</style>
+        </div>
+    )
+}
+
+function NodeNetwork() {
+    const [nodes] = useState(() => Array.from({ length: 12 }).map((_, i) => ({
+        id: i,
+        x: Math.random() * 800,
+        y: Math.random() * 400,
+        color: i % 3 === 0 ? '#EF4444' : i % 2 === 0 ? '#F59E0B' : '#10B981',
+        size: Math.random() * 10 + 5
+    })))
+
+    return (
+        <svg width="800" height="400" viewBox="0 0 800 400" style={{ overflow: 'visible' }}>
+            {/* Connection Lines */}
+            {nodes.map((n1, i) =>
+                nodes.slice(i + 1).map((n2, j) => {
+                    const dist = Math.sqrt((n1.x - n2.x) ** 2 + (n1.y - n2.y) ** 2)
+                    if (dist < 200) {
+                        return (
+                            <line key={`${i}-${j}`} x1={n1.x} y1={n1.y} x2={n2.x} y2={n2.y}
+                                stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+                        )
+                    }
+                    return null
+                })
+            )}
+
+            {/* Particles flowing along lines simulation */}
+            <circle r="2" fill="#10B981">
+                <animateMotion
+                    dur="3s" repeatCount="indefinite"
+                    path="M 100 100 L 300 150 L 500 50 L 700 300"
+                />
+            </circle>
+            <circle r="2" fill="#10B981">
+                <animateMotion
+                    dur="4s" repeatCount="indefinite"
+                    path="M 600 50 L 400 300 L 100 200"
+                />
+            </circle>
+
+            {/* Nodes */}
+            {nodes.map(node => (
+                <g key={node.id} style={{ animation: `pulse-node 4s infinite ${node.id * 0.2}s` }}>
+                    <circle cx={node.x} cy={node.y} r={node.size} fill={node.color} opacity="0.6">
+                        <animate attributeName="opacity" values="0.2;0.6;0.2" dur="4s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx={node.x} cy={node.y} r={node.size / 2} fill={node.color} />
+                </g>
+            ))}
+
+            <style>{`
+                @keyframes pulse-node {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.1); }
+                    100% { transform: scale(1); }
+                }
+            `}</style>
+        </svg>
     )
 }
 
@@ -345,7 +336,7 @@ function ArchitectureContent() {
     return (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px' }}>
             <div>
-                <h3 style={{ color: 'var(--optimal)', fontSize: '13px', fontWeight: 900, marginBottom: '24px' }}>01 ── INTEGRATED PIPELINE</h3>
+                <h3 style={{ color: '#10B981', fontSize: '13px', fontWeight: 900, marginBottom: '24px' }}>01 ── INTEGRATED PIPELINE</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <LayerCard title="UI & Visualization" tech="React 18 | Chart.js" desc="Real-time telemetry rendering and before/after comparison logic." />
                     <LayerCard title="Core Engine Layer" tech="FastAPI | ONNX | Carbon.io" desc="Inference orchestration, INT8 quantization, and carbon grid translation." />
@@ -355,7 +346,7 @@ function ArchitectureContent() {
             <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '12px', padding: '32px', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 800, marginBottom: '20px' }}>Logical Flow</h3>
                 <div style={{ fontFamily: 'monospace', fontSize: '12px', color: 'rgba(255,255,255,0.5)', lineHeight: '2' }}>
-                    <div style={{ color: 'var(--optimal)' }}>[START] Subprocess Poll (rocm-smi)</div>
+                    <div style={{ color: '#10B981' }}>[START] Subprocess Poll (rocm-smi)</div>
                     <div style={{ paddingLeft: '20px' }}>➜ Map Hardware Watts (float)</div>
                     <div style={{ paddingLeft: '20px' }}>➜ Aggregate total_energy_wh</div>
                     <div style={{ color: '#3b82f6' }}>➜ PUSH: WebSocket Stream (1Hz)</div>
@@ -404,7 +395,7 @@ function DocumentationContent() {
 function DocSection({ title, items }) {
     return (
         <div>
-            <h3 style={{ fontSize: '14px', fontWeight: 900, color: 'var(--optimal)', marginBottom: '16px' }}>{title}</h3>
+            <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#10B981', marginBottom: '16px' }}>{title}</h3>
             {items.map((item, i) => (
                 <div key={i} style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                     <div style={{ fontSize: '11px', fontWeight: 900, color: 'rgba(255,255,255,0.4)' }}>{item.label}</div>
