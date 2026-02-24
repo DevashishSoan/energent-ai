@@ -19,6 +19,7 @@ const TERMINAL_LOGS = [
 export default function LandingPage() {
     const navigate = useNavigate()
     const [logs, setLogs] = useState([])
+    const [showOverlay, setShowOverlay] = useState(null) // 'architecture' | 'documentation'
 
     const indexRef = useRef(0)
     const intervalRef = useRef(null)
@@ -89,8 +90,8 @@ export default function LandingPage() {
 
                 <div style={{ display: 'flex', gap: '40px', fontSize: '13px', color: 'rgba(255,255,255,0.6)', fontWeight: 700, letterSpacing: '1px' }}>
                     <span className="nav-link cursor-pointer" onClick={() => navigate('/dashboard')}>DASHBOARD</span>
-                    <span className="nav-link cursor-pointer">ARCHITECTURE</span>
-                    <span className="nav-link cursor-pointer">DOCUMENTATION</span>
+                    <span className="nav-link cursor-pointer" onClick={() => setShowOverlay('architecture')}>ARCHITECTURE</span>
+                    <span className="nav-link cursor-pointer" onClick={() => setShowOverlay('documentation')}>DOCUMENTATION</span>
                 </div>
 
                 <button
@@ -169,6 +170,7 @@ export default function LandingPage() {
                         START RUNNING →
                     </button>
                     <button
+                        onClick={() => window.open('https://github.com/aiman/energent-ai', '_blank')}
                         style={{
                             padding: '20px 40px', fontSize: '18px', fontWeight: 800,
                             borderRadius: '12px', background: 'transparent', color: '#fff',
@@ -278,6 +280,10 @@ export default function LandingPage() {
                 </div>
             </div>
 
+            {showOverlay && (
+                <TechOverlay type={showOverlay} onClose={() => setShowOverlay(null)} />
+            )}
+
             <style>{`
                 .nav-link:hover { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
                 .btn-hover-glow:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); border-color: rgba(255,255,255,0.3); }
@@ -289,7 +295,122 @@ export default function LandingPage() {
                         linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
                     background-size: 40px 40px;
                 }
+                .glass-overlay {
+                    backdrop-filter: blur(20px);
+                    animation: fadeIn 0.3s ease-out;
+                }
+                @keyframes fadeIn { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: scale(1); } }
             `}</style>
+        </div>
+    )
+}
+
+function TechOverlay({ type, onClose }) {
+    return (
+        <div className="glass-overlay" style={{
+            position: 'fixed', inset: 0, zIndex: 100,
+            background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '40px'
+        }}>
+            <div style={{
+                width: '100%', maxWidth: '1200px', maxHeight: '90vh',
+                background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '16px', overflow: 'hidden', display: 'flex', flexDirection: 'column',
+                boxShadow: '0 40px 100px rgba(0,0,0,0.8)'
+            }}>
+                <div style={{
+                    padding: '24px 40px', borderBottom: '1px solid rgba(255,255,255,0.05)',
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    background: 'rgba(255,255,255,0.02)'
+                }}>
+                    <h2 style={{ fontSize: '20px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase' }}>
+                        {type === 'architecture' ? 'System Pipeline Architecture' : 'Technical Documentation'}
+                    </h2>
+                    <button onClick={onClose} style={{
+                        background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
+                        color: '#fff', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer',
+                        fontSize: '11px', fontWeight: 800
+                    }}>CLOSE ESC</button>
+                </div>
+
+                <div style={{ flex: 1, overflowY: 'auto', padding: '40px' }}>
+                    {type === 'architecture' ? <ArchitectureContent /> : <DocumentationContent />}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function ArchitectureContent() {
+    return (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px' }}>
+            <div>
+                <h3 style={{ color: 'var(--optimal)', fontSize: '13px', fontWeight: 900, marginBottom: '24px' }}>01 ── INTEGRATED PIPELINE</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <LayerCard title="UI & Visualization" tech="React 18 | Chart.js" desc="Real-time telemetry rendering and before/after comparison logic." />
+                    <LayerCard title="Core Engine Layer" tech="FastAPI | ONNX | Carbon.io" desc="Inference orchestration, INT8 quantization, and carbon grid translation." />
+                    <LayerCard title="Hardware Telemetry" tech="ROCm | RAPL | XDNA" desc="Direct silicon-level polling for GPU, CPU, and NPU power states." />
+                </div>
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '12px', padding: '32px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 800, marginBottom: '20px' }}>Logical Flow</h3>
+                <div style={{ fontFamily: 'monospace', fontSize: '12px', color: 'rgba(255,255,255,0.5)', lineHeight: '2' }}>
+                    <div style={{ color: 'var(--optimal)' }}>[START] Subprocess Poll (rocm-smi)</div>
+                    <div style={{ paddingLeft: '20px' }}>➜ Map Hardware Watts (float)</div>
+                    <div style={{ paddingLeft: '20px' }}>➜ Aggregate total_energy_wh</div>
+                    <div style={{ color: '#3b82f6' }}>➜ PUSH: WebSocket Stream (1Hz)</div>
+                    <div style={{ paddingLeft: '40px' }}>➜ Dashboard: Update Power Spectrum</div>
+                    <div style={{ paddingLeft: '40px' }}>➜ Dashboard: Render Optimal Path</div>
+                    <div style={{ color: '#a78bfa' }}>➜ Optimization: Query Reference DB</div>
+                    <div style={{ paddingLeft: '60px' }}>➜ Rank Suggestions by ROI</div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function LayerCard({ title, tech, desc }) {
+    return (
+        <div style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', marginBottom: '4px' }}>{tech}</div>
+            <div style={{ fontSize: '16px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>{title}</div>
+            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', lineHeight: '1.5' }}>{desc}</div>
+        </div>
+    )
+}
+
+function DocumentationContent() {
+    return (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
+            <DocSection title="API Endpoints" items={[
+                { label: 'POST /api/run', val: 'Trigger workload with {model, target, precision}' },
+                { label: 'GET /api/optimize', val: 'Returns ranked suggestions based on benchmark' },
+                { label: 'WS /ws/power', val: 'Real-time telemetry stream (JSON)' }
+            ]} />
+            <DocSection title="Carbon Calculation" items={[
+                { label: 'Formula', val: 'Energy(Wh) = Watts * (Time/3600)' },
+                { label: 'Emissions', val: 'CO2(g) = Energy * Intensity (820g/kWh)' },
+                { label: 'Context', val: 'Relatable metrics: KM driven, Tree Hours' }
+            ]} />
+            <DocSection title="Hardware Fallbacks" items={[
+                { label: 'No GPU', val: 'Switch to TDP-utilization estimation' },
+                { label: 'No NPU', val: 'Hide optimized pipeline or show simulated potential' },
+                { label: 'API Down', val: 'Persistent cache of last electrical grid intensity' }
+            ]} />
+        </div>
+    )
+}
+
+function DocSection({ title, items }) {
+    return (
+        <div>
+            <h3 style={{ fontSize: '14px', fontWeight: 900, color: 'var(--optimal)', marginBottom: '16px' }}>{title}</h3>
+            {items.map((item, i) => (
+                <div key={i} style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 900, color: 'rgba(255,255,255,0.4)' }}>{item.label}</div>
+                    <div style={{ fontSize: '13px', color: '#fff', fontWeight: 600 }}>{item.val}</div>
+                </div>
+            ))}
         </div>
     )
 }
