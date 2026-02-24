@@ -173,7 +173,7 @@ export default function LandingPage() {
                     </button>
                     <button
                         className="btn-secondary-outline"
-                        onClick={() => window.open('https://github.com/aiman/energent-ai', '_blank')}
+                        onClick={() => window.open('https://github.com/DevashishSoan/energent-ai', '_blank')}
                         style={{
                             padding: '18px 48px', fontSize: '16px', fontWeight: 800,
                             borderRadius: '12px', background: 'transparent', color: '#fff',
