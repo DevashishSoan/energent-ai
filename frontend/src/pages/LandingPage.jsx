@@ -23,7 +23,8 @@ export default function LandingPage() {
             flexDirection: 'column',
             fontFamily: "'Outfit', sans-serif",
             overflowX: 'hidden',
-            position: 'relative'
+            position: 'relative',
+            width: '100%'
         }}>
             {/* ── Background: Noise & Neural Flow Mesh ── */}
             <div className="noise-texture" style={{ position: 'fixed', inset: 0, opacity: 0.05, pointerEvents: 'none', zIndex: 1 }} />
@@ -73,12 +74,22 @@ export default function LandingPage() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 textAlign: 'center',
-                padding: '40px 24px 100px 24px',
+                padding: '80px 24px 120px 24px',
                 zIndex: 10,
-                position: 'relative'
+                position: 'relative',
+                width: '100%',
+                maxWidth: '1400px',
+                margin: '0 auto'
             }}>
-                {/* Floating Live Metrics Panel (Emotional Hook) */}
-                <LiveMetricsPanel />
+                {/* Floating Live Metrics Panel (Emotional Hook) - Fixed Positioning */}
+                <div style={{
+                    position: 'absolute',
+                    top: '40px',
+                    right: '40px',
+                    zIndex: 20
+                }}>
+                    <LiveMetricsPanel />
+                </div>
 
                 {/* Status Bar */}
                 <div style={{
@@ -290,12 +301,15 @@ function LiveMetricsPanel() {
 
     return (
         <div style={{
-            position: 'absolute', top: '100px', right: '-120px', width: '240px',
-            background: 'rgba(10,10,10,0.8)', border: '1px solid rgba(16,185,129,0.3)',
-            borderRadius: '16px', padding: '20px', textAlign: 'left',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.5), 0 0 20px rgba(16,185,129,0.1)',
-            zIndex: 20, backdropFilter: 'blur(10px)',
-            animation: 'panel-float 6s infinite ease-in-out'
+            width: '260px',
+            background: 'rgba(10,10,10,0.85)',
+            border: '1px solid rgba(16,185,129,0.4)',
+            borderRadius: '20px',
+            padding: '24px',
+            textAlign: 'left',
+            boxShadow: '0 30px 60px rgba(0,0,0,0.7), 0 0 30px rgba(16,185,129,0.1)',
+            backdropFilter: 'blur(12px)',
+            animation: 'panel-float 8s infinite ease-in-out'
         }}>
             <div style={{ fontSize: '10px', color: '#10B981', fontWeight: 900, letterSpacing: '1px', marginBottom: '12px', textTransform: 'uppercase' }}>
                 REAL-TIME TELEMETRY
