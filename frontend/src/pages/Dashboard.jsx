@@ -17,6 +17,8 @@ import ValidationTable from '../components/ValidationTable'
 import NPUStory from '../components/NPUStory'
 import FallbackStory from '../components/FallbackStory'
 import AIRecommendation from '../components/AIRecommendation'
+import WorkloadsView from '../components/WorkloadsView'
+import OptimizationView from '../components/OptimizationView'
 
 // App states: IDLE → RUNNING → ANALYZING → OPTIMIZED → COMPLETE
 const STATES = { IDLE: 'IDLE', RUNNING: 'RUNNING', ANALYZING: 'ANALYZING', OPTIMIZED: 'OPTIMIZED', COMPLETE: 'COMPLETE' }
@@ -27,6 +29,7 @@ const PRECISION_OPTIONS = ['FP32', 'FP16', 'INT8']
 
 export default function Dashboard() {
     // ── State ──────────────────────────────────────────────────────────────────
+    const [activeTab, setActiveTab] = useState('dashboard') // dashboard, workloads, optimization
     const [appState, setAppState] = useState(STATES.IDLE)
     const [models, setModels] = useState([])
     const [loadingModels, setLoadingModels] = useState(true)
@@ -183,10 +186,28 @@ export default function Dashboard() {
                     </div>
                     <div style={{ width: '1px', height: '28px', background: 'var(--border-muted)' }} />
                     <nav style={{ display: 'flex', gap: '24px', fontSize: '12px' }}>
-                        <span className="tab-active">Dashboard</span>
+                        <span
+                            className={activeTab === 'dashboard' ? "tab-active" : "tab-inactive"}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => setActiveTab('dashboard')}
+                        >
+                            Dashboard
+                        </span>
                         <div style={{ width: '1px', height: '12px', background: 'var(--border-subtle)', alignSelf: 'center' }} />
-                        <span className="tab-inactive" style={{ opacity: 0.8 }}>Workloads</span>
-                        <span className="tab-inactive" style={{ opacity: 0.8 }}>Optimization</span>
+                        <span
+                            className={activeTab === 'workloads' ? "tab-active" : "tab-inactive"}
+                            style={{ cursor: 'pointer', opacity: activeTab === 'workloads' ? 1 : 0.8 }}
+                            onClick={() => setActiveTab('workloads')}
+                        >
+                            Workloads
+                        </span>
+                        <span
+                            className={activeTab === 'optimization' ? "tab-active" : "tab-inactive"}
+                            style={{ cursor: 'pointer', opacity: activeTab === 'optimization' ? 1 : 0.8 }}
+                            onClick={() => setActiveTab('optimization')}
+                        >
+                            Optimization
+                        </span>
                     </nav>
                 </div>
 
@@ -217,233 +238,238 @@ export default function Dashboard() {
 
 
             {/* ── Main layout ── */}
-            <main className="main-layout">
+            <main className={activeTab === 'dashboard' ? "main-layout" : "main-layout-alt"}>
+                {activeTab === 'dashboard' && (
+                    <>
+                        {/* ── Left panel: controls ── */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-                {/* ── Left panel: controls ── */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {/* AI Recommendation Engine — New Hero Insight */}
+                            <AIRecommendation prediction={prediction} suggestions={suggestions} />
 
-                    {/* AI Recommendation Engine — New Hero Insight */}
-                    <AIRecommendation prediction={prediction} suggestions={suggestions} />
+                            {/* Engine Configuration — Advanced Control Center */}
+                            <div className="glass-card" style={{ padding: '24px', background: 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, var(--bg-surface) 100%)' }}>
+                                <div style={{ fontSize: '10px', fontWeight: 900, color: 'var(--text-secondary)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '24px' }}>
+                                    Core Control Center
+                                </div>
 
-                    {/* Engine Configuration — Advanced Control Center */}
-                    <div className="glass-card" style={{ padding: '24px', background: 'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, var(--bg-surface) 100%)' }}>
-                        <div style={{ fontSize: '10px', fontWeight: 900, color: 'var(--text-secondary)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '24px' }}>
-                            Core Control Center
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                    {/* Task Type Selector */}
+                                    <div>
+                                        <label style={{ fontSize: '9px', color: 'var(--text-tertiary)', fontWeight: 900, display: 'block', marginBottom: '8px', letterSpacing: '1px' }}>AI CLUSTER</label>
+                                        <select className="control-glass" value={selectedTask} onChange={e => setSelectedTask(e.target.value)} style={{ width: '100%' }}>
+                                            {TASK_OPTIONS.map(t => <option key={t} value={t}>{t} Operations</option>)}
+                                        </select>
+                                    </div>
+
+                                    {/* Model Selector */}
+                                    <div>
+                                        <label style={{ fontSize: '9px', color: 'var(--text-tertiary)', fontWeight: 900, display: 'block', marginBottom: '8px', letterSpacing: '1px' }}>MODEL ENGINE</label>
+                                        {loadingModels ? (
+                                            <div style={{ color: 'var(--text-muted)', fontSize: '12px', padding: '10px', background: 'var(--bg-base)', border: '1px dashed var(--border-muted)', borderRadius: '6px' }}>
+                                                Intergrating engine list...
+                                            </div>
+                                        ) : modelError ? (
+                                            <div style={{ color: 'var(--alert)', fontSize: '12px', padding: '10px', border: '1px solid var(--alert)', borderRadius: '6px' }}>
+                                                Link Error
+                                            </div>
+                                        ) : (
+                                            <select className="control-glass" value={selectedModel} onChange={e => setSelectedModel(e.target.value)} style={{ width: '100%' }}>
+                                                {filteredModels.map(m => (
+                                                    <option key={m.model_id} value={m.model_id}>{m.display_name}</option>
+                                                ))}
+                                            </select>
+                                        )}
+                                    </div>
+
+                                    {/* HW & Precision Grid */}
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                        <div>
+                                            <label style={{ fontSize: '9px', color: 'var(--text-tertiary)', fontWeight: 900, display: 'block', marginBottom: '8px', letterSpacing: '1px' }}>HARDWARE</label>
+                                            <select className="control-glass" value={computeTarget} onChange={e => setComputeTarget(e.target.value)} style={{ width: '100%' }}>
+                                                {COMPUTE_OPTIONS.map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style={{ fontSize: '9px', color: 'var(--text-tertiary)', fontWeight: 900, display: 'block', marginBottom: '8px', letterSpacing: '1px' }}>PRECISION</label>
+                                            <select className="control-glass" value={precision} onChange={e => setPrecision(e.target.value)} style={{ width: '100%' }}>
+                                                {PRECISION_OPTIONS.map(p => <option key={p} value={p}>{p}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="divider" style={{ margin: '32px 0', opacity: 0.5 }} />
+
+                                {/* Execute Action */}
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button
+                                        className="btn-primary"
+                                        style={{
+                                            flex: 1, height: '48px', fontSize: '11px', fontWeight: 900,
+                                            letterSpacing: '1.5px', textTransform: 'uppercase',
+                                            boxShadow: '0 8px 16px rgba(16, 185, 129, 0.2)'
+                                        }}
+                                        onClick={handleRun}
+                                        disabled={!selectedModel || appState === STATES.RUNNING || appState === STATES.ANALYZING}
+                                    >
+                                        {appState === STATES.RUNNING ? 'ENGINE ACTIVE' :
+                                            appState === STATES.ANALYZING ? 'STABILIZING...' : 'INITIALIZE ENGINE'}
+                                    </button>
+                                    {(appState === STATES.COMPLETE || appState === STATES.OPTIMIZED) && (
+                                        <button
+                                            className="btn-secondary"
+                                            style={{ height: '48px', padding: '0 20px', fontWeight: 800 }}
+                                            onClick={handleReset}
+                                        >
+                                            RESET
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* PreOpt Prediction Panel */}
+                            <PredictionPanel
+                                prediction={prediction}
+                                loading={predLoading}
+                                onApply={handleApplyBestAlternative}
+                            />
+
+                            {/* Fallback story — answers "What if no AMD hardware?" */}
+                            <FallbackStory hardware={hardware} />
                         </div>
 
+                        {/* ── Right panel: charts + results ── */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            {/* Task Type Selector */}
-                            <div>
-                                <label style={{ fontSize: '9px', color: 'var(--text-tertiary)', fontWeight: 900, display: 'block', marginBottom: '8px', letterSpacing: '1px' }}>AI CLUSTER</label>
-                                <select className="control-glass" value={selectedTask} onChange={e => setSelectedTask(e.target.value)} style={{ width: '100%' }}>
-                                    {TASK_OPTIONS.map(t => <option key={t} value={t}>{t} Operations</option>)}
-                                </select>
+
+                            {/* Hero Visuals Section */}
+                            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 420px)', gap: '16px' }}>
+                                <TopologyFlow latest={latest} connected={connected} target={computeTarget} />
+                                <NPUStory />
                             </div>
 
-                            {/* Model Selector */}
-                            <div>
-                                <label style={{ fontSize: '9px', color: 'var(--text-tertiary)', fontWeight: 900, display: 'block', marginBottom: '8px', letterSpacing: '1px' }}>MODEL ENGINE</label>
-                                {loadingModels ? (
-                                    <div style={{ color: 'var(--text-muted)', fontSize: '12px', padding: '10px', background: 'var(--bg-base)', border: '1px dashed var(--border-muted)', borderRadius: '6px' }}>
-                                        Intergrating engine list...
-                                    </div>
-                                ) : modelError ? (
-                                    <div style={{ color: 'var(--alert)', fontSize: '12px', padding: '10px', border: '1px solid var(--alert)', borderRadius: '6px' }}>
-                                        Link Error
-                                    </div>
-                                ) : (
-                                    <select className="control-glass" value={selectedModel} onChange={e => setSelectedModel(e.target.value)} style={{ width: '100%' }}>
-                                        {filteredModels.map(m => (
-                                            <option key={m.model_id} value={m.model_id}>{m.display_name}</option>
+
+                            {/* Power chart + grade row */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 180px', gap: '16px', alignItems: 'start' }}>
+                                <PowerChart
+                                    labels={labels}
+                                    gpuData={gpuData}
+                                    cpuData={cpuData}
+                                    npuData={npuData}
+                                    connected={connected}
+                                    hardware={hardware}
+                                />
+                                <EfficiencyGrade
+                                    grade={currentRun?.grade || prediction?.predicted_grade}
+                                    avgWatts={currentRun?.avg_watts || prediction?.predicted_watts}
+                                    co2PerRun={currentRun?.co2_g}
+                                    isPredicted={!currentRun?.grade && !!prediction?.predicted_grade}
+                                    branding="Energent AI"
+                                />
+                            </div>
+
+                            {/* Live stats bar — Wrapped in Glass Premium */}
+                            {latest && (
+                                <div className="glass-premium fade-in" style={{ padding: '24px 32px' }}>
+                                    <div style={{ display: 'flex', gap: '48px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        {[
+                                            { label: 'GPU CLUSTER', value: `${latest.gpu_watts?.toFixed(1)}W`, color: 'var(--optimal)', size: '26px' },
+                                            { label: 'CPU NODE', value: `${latest.cpu_watts?.toFixed(1)}W`, color: 'var(--info)', size: '26px' },
+                                            latest.npu_watts != null && { label: 'AMD NPU', value: `${latest.npu_watts?.toFixed(1)}W`, color: '#a78bfa', size: '26px' },
+                                            { label: 'TOTAL CONSUMPTION', value: `${latest.total_watts?.toFixed(1)}W`, color: '#fff', size: '36px' },
+                                            { label: 'CUMULATIVE CO₂', value: `${latest.co2_g_cumulative?.toFixed(3)}g`, color: 'var(--text-tertiary)', size: '26px' },
+                                        ].filter(Boolean).map(item => (
+                                            <div key={item.label} style={{ textAlign: 'center' }}>
+                                                <div style={{ fontSize: '9px', color: 'var(--text-tertiary)', marginBottom: '6px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase' }}>{item.label}</div>
+                                                <div className="mono" style={{ fontSize: item.size, fontWeight: 900, color: item.color, lineHeight: 1 }}>{item.value}</div>
+                                            </div>
                                         ))}
-                                    </select>
-                                )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Before/After */}
+                            {baselineRun && currentRun?.status === 'complete' && (
+                                <BeforeAfter baseline={baselineRun} optimized={currentRun} />
+                            )}
+
+                            {/* Optimization suggestions */}
+                            {suggestions.length > 0 && (
+                                <OptimizationTable
+                                    suggestions={suggestions}
+                                    runId={currentRunId}
+                                    onApplyAll={appState === STATES.COMPLETE ? handleApplyAll : null}
+                                />
+                            )}
+
+                            {/* Carbon context */}
+                            {(currentRun?.co2_g || prediction?.carbon_context) && (
+                                <CarbonContext
+                                    co2Grams={currentRun?.co2_g}
+                                    context={currentRun ? null : prediction?.carbon_context}
+                                    gridIntensity={carbon?.intensity_g_kwh}
+                                    gridSource={carbon?.source}
+                                />
+                            )}
+
+                            {/* Validation table */}
+                            <ValidationTable />
+
+                            {/* NEW: Projected Annual Impact (Fills dead space) */}
+                            <div className="glass-premium fade-in" style={{ padding: '28px', borderLeft: '3px solid var(--optimal)', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+                                    <div>
+                                        <div style={{ fontSize: '10px', fontWeight: 900, color: 'var(--optimal)', letterSpacing: '2px', textTransform: 'uppercase' }}>
+                                            Impact Projection
+                                        </div>
+                                        <div style={{ fontSize: '18px', fontWeight: 800, color: '#fff', marginTop: '6px', letterSpacing: '-0.5px' }}>
+                                            Annual Sustainability ROI
+                                        </div>
+                                    </div>
+                                    <div style={{ fontSize: '24px' }}>🌲</div>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                    <div style={{ background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-subtle)' }}>
+                                        <div style={{ fontSize: '9px', fontWeight: 900, color: 'var(--text-tertiary)', marginBottom: '10px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Est. Annual Savings</div>
+                                        <div className="mono" style={{ fontSize: '24px', fontWeight: 900, color: 'var(--optimal)', lineHeight: 1 }}>
+                                            $142.60
+                                        </div>
+                                        <div style={{ fontSize: '9px', color: 'var(--text-secondary)', marginTop: '8px', fontWeight: 800 }}>OPERATIONAL REDUCTION</div>
+                                    </div>
+                                    <div style={{ background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-subtle)' }}>
+                                        <div style={{ fontSize: '9px', fontWeight: 900, color: 'var(--text-tertiary)', marginBottom: '10px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Carbon Offset</div>
+                                        <div className="mono" style={{ fontSize: '24px', fontWeight: 900, color: 'var(--info)', lineHeight: 1 }}>
+                                            14.8 <span style={{ fontSize: '12px' }}>KG</span>
+                                        </div>
+                                        <div style={{ fontSize: '9px', color: 'var(--text-secondary)', marginTop: '8px', fontWeight: 800 }}>24.2 TREES EQUIVALENT</div>
+                                    </div>
+                                </div>
+
+                                <div style={{
+                                    marginTop: '20px', padding: '12px', background: 'rgba(0,0,0,0.2)',
+                                    borderRadius: '8px', fontSize: '10px', color: 'var(--text-secondary)',
+                                    lineHeight: 1.6, border: '1px dashed var(--border-muted)'
+                                }}>
+                                    "Optimizing this engine today prevents <strong>14.8kg</strong> of CO2 emissions annually. That's equivalent to driving an average passenger vehicle for 36 miles."
+                                </div>
                             </div>
 
-                            {/* HW & Precision Grid */}
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                                <div>
-                                    <label style={{ fontSize: '9px', color: 'var(--text-tertiary)', fontWeight: 900, display: 'block', marginBottom: '8px', letterSpacing: '1px' }}>HARDWARE</label>
-                                    <select className="control-glass" value={computeTarget} onChange={e => setComputeTarget(e.target.value)} style={{ width: '100%' }}>
-                                        {COMPUTE_OPTIONS.map(c => <option key={c} value={c}>{c.toUpperCase()}</option>)}
-                                    </select>
+                            {/* State indicator */}
+                            {appState !== STATES.IDLE && (
+                                <div style={{
+                                    textAlign: 'center', fontSize: '12px', color: 'var(--text-muted)',
+                                    padding: '8px', letterSpacing: '1px',
+                                }}>
+                                    STATE: <span className="mono" style={{ color: 'var(--green)' }}>{appState}</span>
                                 </div>
-                                <div>
-                                    <label style={{ fontSize: '9px', color: 'var(--text-tertiary)', fontWeight: 900, display: 'block', marginBottom: '8px', letterSpacing: '1px' }}>PRECISION</label>
-                                    <select className="control-glass" value={precision} onChange={e => setPrecision(e.target.value)} style={{ width: '100%' }}>
-                                        {PRECISION_OPTIONS.map(p => <option key={p} value={p}>{p}</option>)}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="divider" style={{ margin: '32px 0', opacity: 0.5 }} />
-
-                        {/* Execute Action */}
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                            <button
-                                className="btn-primary"
-                                style={{
-                                    flex: 1, height: '48px', fontSize: '11px', fontWeight: 900,
-                                    letterSpacing: '1.5px', textTransform: 'uppercase',
-                                    boxShadow: '0 8px 16px rgba(16, 185, 129, 0.2)'
-                                }}
-                                onClick={handleRun}
-                                disabled={!selectedModel || appState === STATES.RUNNING || appState === STATES.ANALYZING}
-                            >
-                                {appState === STATES.RUNNING ? 'ENGINE ACTIVE' :
-                                    appState === STATES.ANALYZING ? 'STABILIZING...' : 'INITIALIZE ENGINE'}
-                            </button>
-                            {(appState === STATES.COMPLETE || appState === STATES.OPTIMIZED) && (
-                                <button
-                                    className="btn-secondary"
-                                    style={{ height: '48px', padding: '0 20px', fontWeight: 800 }}
-                                    onClick={handleReset}
-                                >
-                                    RESET
-                                </button>
                             )}
                         </div>
-                    </div>
+                    </>
+                )}
 
-                    {/* PreOpt Prediction Panel */}
-                    <PredictionPanel
-                        prediction={prediction}
-                        loading={predLoading}
-                        onApply={handleApplyBestAlternative}
-                    />
-
-                    {/* Fallback story — answers "What if no AMD hardware?" */}
-                    <FallbackStory hardware={hardware} />
-                </div>
-
-                {/* ── Right panel: charts + results ── */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-
-                    {/* Hero Visuals Section */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 420px)', gap: '16px' }}>
-                        <TopologyFlow latest={latest} connected={connected} />
-                        <NPUStory />
-                    </div>
-
-
-                    {/* Power chart + grade row */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 180px', gap: '16px', alignItems: 'start' }}>
-                        <PowerChart
-                            labels={labels}
-                            gpuData={gpuData}
-                            cpuData={cpuData}
-                            npuData={npuData}
-                            connected={connected}
-                            hardware={hardware}
-                        />
-                        <EfficiencyGrade
-                            grade={currentRun?.grade || prediction?.predicted_grade}
-                            avgWatts={currentRun?.avg_watts || prediction?.predicted_watts}
-                            co2PerRun={currentRun?.co2_g}
-                            isPredicted={!currentRun?.grade && !!prediction?.predicted_grade}
-                            branding="Energent AI"
-                        />
-                    </div>
-
-                    {/* Live stats bar — Wrapped in Glass Premium */}
-                    {latest && (
-                        <div className="glass-premium fade-in" style={{ padding: '24px 32px' }}>
-                            <div style={{ display: 'flex', gap: '48px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-                                {[
-                                    { label: 'GPU CLUSTER', value: `${latest.gpu_watts?.toFixed(1)}W`, color: 'var(--optimal)', size: '26px' },
-                                    { label: 'CPU NODE', value: `${latest.cpu_watts?.toFixed(1)}W`, color: 'var(--info)', size: '26px' },
-                                    latest.npu_watts != null && { label: 'AMD NPU', value: `${latest.npu_watts?.toFixed(1)}W`, color: '#a78bfa', size: '26px' },
-                                    { label: 'TOTAL CONSUMPTION', value: `${latest.total_watts?.toFixed(1)}W`, color: '#fff', size: '36px' },
-                                    { label: 'CUMULATIVE CO₂', value: `${latest.co2_g_cumulative?.toFixed(3)}g`, color: 'var(--text-tertiary)', size: '26px' },
-                                ].filter(Boolean).map(item => (
-                                    <div key={item.label} style={{ textAlign: 'center' }}>
-                                        <div style={{ fontSize: '9px', color: 'var(--text-tertiary)', marginBottom: '6px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase' }}>{item.label}</div>
-                                        <div className="mono" style={{ fontSize: item.size, fontWeight: 900, color: item.color, lineHeight: 1 }}>{item.value}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Before/After */}
-                    {baselineRun && currentRun?.status === 'complete' && (
-                        <BeforeAfter baseline={baselineRun} optimized={currentRun} />
-                    )}
-
-                    {/* Optimization suggestions */}
-                    {suggestions.length > 0 && (
-                        <OptimizationTable
-                            suggestions={suggestions}
-                            runId={currentRunId}
-                            onApplyAll={appState === STATES.COMPLETE ? handleApplyAll : null}
-                        />
-                    )}
-
-                    {/* Carbon context */}
-                    {(currentRun?.co2_g || prediction?.carbon_context) && (
-                        <CarbonContext
-                            co2Grams={currentRun?.co2_g}
-                            context={currentRun ? null : prediction?.carbon_context}
-                            gridIntensity={carbon?.intensity_g_kwh}
-                            gridSource={carbon?.source}
-                        />
-                    )}
-
-                    {/* Validation table */}
-                    <ValidationTable />
-
-                    {/* NEW: Projected Annual Impact (Fills dead space) */}
-                    <div className="glass-premium fade-in" style={{ padding: '28px', borderLeft: '3px solid var(--optimal)', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-                            <div>
-                                <div style={{ fontSize: '10px', fontWeight: 900, color: 'var(--optimal)', letterSpacing: '2px', textTransform: 'uppercase' }}>
-                                    Impact Projection
-                                </div>
-                                <div style={{ fontSize: '18px', fontWeight: 800, color: '#fff', marginTop: '6px', letterSpacing: '-0.5px' }}>
-                                    Annual Sustainability ROI
-                                </div>
-                            </div>
-                            <div style={{ fontSize: '24px' }}>🌲</div>
-                        </div>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-subtle)' }}>
-                                <div style={{ fontSize: '9px', fontWeight: 900, color: 'var(--text-tertiary)', marginBottom: '10px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Est. Annual Savings</div>
-                                <div className="mono" style={{ fontSize: '24px', fontWeight: 900, color: 'var(--optimal)', lineHeight: 1 }}>
-                                    $142.60
-                                </div>
-                                <div style={{ fontSize: '9px', color: 'var(--text-secondary)', marginTop: '8px', fontWeight: 800 }}>OPERATIONAL REDUCTION</div>
-                            </div>
-                            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-subtle)' }}>
-                                <div style={{ fontSize: '9px', fontWeight: 900, color: 'var(--text-tertiary)', marginBottom: '10px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Carbon Offset</div>
-                                <div className="mono" style={{ fontSize: '24px', fontWeight: 900, color: 'var(--info)', lineHeight: 1 }}>
-                                    14.8 <span style={{ fontSize: '12px' }}>KG</span>
-                                </div>
-                                <div style={{ fontSize: '9px', color: 'var(--text-secondary)', marginTop: '8px', fontWeight: 800 }}>24.2 TREES EQUIVALENT</div>
-                            </div>
-                        </div>
-
-                        <div style={{
-                            marginTop: '20px', padding: '12px', background: 'rgba(0,0,0,0.2)',
-                            borderRadius: '8px', fontSize: '10px', color: 'var(--text-secondary)',
-                            lineHeight: 1.6, border: '1px dashed var(--border-muted)'
-                        }}>
-                            "Optimizing this engine today prevents <strong>14.8kg</strong> of CO2 emissions annually. That's equivalent to driving an average passenger vehicle for 36 miles."
-                        </div>
-                    </div>
-
-                    {/* State indicator */}
-                    {appState !== STATES.IDLE && (
-                        <div style={{
-                            textAlign: 'center', fontSize: '12px', color: 'var(--text-muted)',
-                            padding: '8px', letterSpacing: '1px',
-                        }}>
-                            STATE: <span className="mono" style={{ color: 'var(--green)' }}>{appState}</span>
-                        </div>
-                    )}
-                </div>
-
+                {activeTab === 'workloads' && <WorkloadsView />}
+                {activeTab === 'optimization' && <OptimizationView />}
             </main>
         </div>
     )

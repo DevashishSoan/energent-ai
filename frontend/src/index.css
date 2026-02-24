@@ -183,7 +183,7 @@ label {
 
 /* Control Systems (Inputs) */
 select {
-  background: #000;
+  background: var(--bg-base);
   color: var(--text-primary);
   border: 1px solid var(--border-muted);
   border-radius: 6px;
@@ -199,6 +199,13 @@ select {
   background-position: right 10px center;
   background-size: 14px;
   padding-right: 32px;
+}
+
+select option {
+  background: #141517;
+  /* Explicitly set dark background for options */
+  color: #fff;
+  padding: 10px;
 }
 
 select:hover {
@@ -282,6 +289,12 @@ select:focus {
   display: grid;
   grid-template-columns: 320px 1fr;
   gap: 24px;
+}
+
+.main-layout-alt {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
 }
 
 /* Micro-Animations */

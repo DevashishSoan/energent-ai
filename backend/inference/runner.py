@@ -38,6 +38,10 @@ def load_model(model_id: str, task: str, precision: str, compute_target: str) ->
     import torch
 
     device = _get_device(compute_target)
+    if compute_target == "npu":
+        logger.info("ROUTING: Workload assigned to AMD Ryzen AI NPU")
+    else:
+        logger.info(f"ROUTING: Workload assigned to {compute_target.upper()}")
     torch_dtype = None
 
     if precision == "FP16":

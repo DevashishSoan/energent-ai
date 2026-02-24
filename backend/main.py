@@ -223,6 +223,9 @@ def _execute_run(run_id: str, req: WorkloadRunRequest):
 
     try:
         from inference.runner import run_inference
+        # Set poller context so it can simulate NPU activity if needed
+        poller.set_active_workload(req.compute_target, req.model)
+        
         result = run_inference(
             req.model, req.task, req.precision, req.compute_target,
             req.num_samples, req.batch_size,
@@ -233,6 +236,8 @@ def _execute_run(run_id: str, req: WorkloadRunRequest):
         run["status"] = "failed"
         save_run(run)
         return
+    finally:
+        poller.set_active_workload(None) # Clear context
 
     # Collect readings taken during the run
     all_readings = poller.get_buffer()
